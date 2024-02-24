@@ -8,13 +8,13 @@ def find_depth(N):
         dep += 1
     return dep
 
-def print_arr(idx):
-    if idx >= 2 ** depth:
+def print_tree(mid_idx, width):
+    if width == 0:
         return
-    print_arr(idx * 2)
-    print_arr(idx * 2 + 1)
-    print(num[idx], end = ' ')
-
+    width = width // 2
+    print_tree(mid_idx - width, width)
+    print_tree(mid_idx + width, width)
+    print(num[mid_idx], end=' ')
 
 def create_tree(mid_idx, width):
     if width == 0:
@@ -36,4 +36,4 @@ arr.sort()
 div = N // 2 + 1
 idx = 0
 create_tree(N // 2, div)
-print(num)
+print_tree((N + 1) // 2, div)
