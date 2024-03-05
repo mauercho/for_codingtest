@@ -18,3 +18,5 @@ for i in range(1, N + 1):
         lst = deepcopy(temp)
 
 print(*lst)
+
+# 나중에 뭔지 찾아야함.
