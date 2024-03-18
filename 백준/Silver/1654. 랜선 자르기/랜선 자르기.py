@@ -17,7 +17,7 @@ def binary_search():
         mid = (start + end) // 2
         if get_ans(mid) >= N:
             start = mid + 1
-            ans = max(ans, mid)
+            ans = mid
         else:
             end = mid - 1
 
