@@ -43,7 +43,7 @@ while True:
     if moves and moves[0][0] == time:
         if moves[0][1] == 'D':
             direc = (direc + 1) % 4
-        else:
+        elif moves[0][1] == 'L':
             direc = (direc - 1) % 4
         moves.popleft()
 
