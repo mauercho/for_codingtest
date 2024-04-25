@@ -32,23 +32,22 @@ for _ in range(N):
 
 do_cnt = 0
 one_cnt = sum(map(sum, arr))
-if one_cnt == 0:
-    print(0)
-    print(0)
-else:
-    while True:
-        copy_arr = [list[:] for list in arr]
-        do_minus_change(copy_arr)
-        do_cnt += 1
-        lst_for_cheese = []
-        for i in range(N):
-            for j in range(M):
-                if copy_arr[i][j] == 1 and near_minus(i, j, copy_arr):
-                    one_cnt -= 1
-                    lst_for_cheese.append((i, j))
-        if one_cnt == 0:
-            break
-        for i, j in lst_for_cheese:
-            arr[i][j] = 0
-    print(do_cnt)
-    print(len(lst_for_cheese))
+lst_for_cheese = []
+while True:
+    copy_arr = [list[:] for list in arr]
+    do_minus_change(copy_arr)
+    if one_cnt == 0:
+        break
+    do_cnt += 1
+    lst_for_cheese = []
+    for i in range(N):
+        for j in range(M):
+            if copy_arr[i][j] == 1 and near_minus(i, j, copy_arr):
+                one_cnt -= 1
+                lst_for_cheese.append((i, j))
+    if one_cnt == 0:
+        break
+    for i, j in lst_for_cheese:
+        arr[i][j] = 0
+print(do_cnt)
+print(len(lst_for_cheese))
