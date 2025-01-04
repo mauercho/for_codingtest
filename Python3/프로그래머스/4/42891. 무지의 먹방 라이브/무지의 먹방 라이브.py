@@ -1,20 +1,23 @@
-import heapq
+from heapq import heappush, heappop
+
 
 def solution(food_times, k):
-    if sum(food_times) <= k: # 무조건 음식 다먹는 수
+    if sum(food_times) <= k:
         return -1
-    answer = 2
-    q = []  # 무조건 그거있음.
-    length = len(food_times)
-    for i in range(len(food_times)):
-        heapq.heappush(q, (food_times[i], i + 1))
-    prev = 0
-    while k > length * (q[0][0] - prev):
-        k -= length *  (q[0][0] - prev) 
-        prev = q[0][0]
-        heapq.heappop(q)
-        length -= 1
-    # 여기서 다 털음.
-    lst  = sorted(q, key= lambda x : x[1])
-    answer = lst[k % length][1]
-    return answer
+    heap = []
+    n = len(food_times)
+    previous = 0
+    least_num = 0
+    for i, food in enumerate(food_times):
+        heappush(heap, (food, i + 1))
+    while heap:
+        diff = (heap[0][0] - previous) * n
+        if k >= diff:
+            k -= diff
+            previous = heappop(heap)[0]
+            n -= 1
+        else:
+            heap.sort(key=lambda x: x[1])
+            return heap[k % n][1]
+                
+    return -1
