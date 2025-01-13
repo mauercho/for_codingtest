@@ -1,50 +1,32 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-int N, M;
-vector<int> adj[10001];
-vector<int> tmp;
-vector<int> copy_vec;
-vector<int> ans;
-vector<bool> visited;
+vector<int> v[10001];
+int dp[10001], mx, visited[10001], n, m, a, b;
 
-void dfs(int a) {
-    visited[a] = true;
-    for (int mem : adj[a]) {
-        if (!visited[mem]) {
-            dfs(mem);
-        }
-    }
-    tmp.push_back(a);
+int dfs(int here) {
+	visited[here] = 1;
+	int ret = 1;
+	for(int there : v[here]){
+		if(visited[there]) continue;
+		ret += dfs(there);
+	}
+	return ret;
 }
 
 int main() {
-    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
-    int tmp1, tmp2;
-
-    cin >> N >> M;
-    for (int i = 0; i < M; i++) {
-        cin >> tmp1 >> tmp2;
-        adj[tmp2].push_back(tmp1);
-    }
-
-    for (int i = 1; i <= N; i++) {
-        tmp.clear();
-        visited.assign(N + 1, false);
-        dfs(i);
-        if (copy_vec.size() < tmp.size()) {
-            copy_vec = tmp;
-            ans.clear();
-            ans.push_back(i);
-        }
-        else if (copy_vec.size() == tmp.size()) {
-            ans.push_back(i);
-        }
-    }
-
-    sort(ans.begin(), ans.end());
-    for (int mem : ans) {
-        cout << mem << " ";
-    }
-    return 0;
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cin >> n >> m;
+	while (m--) {
+     	cin >> a >> b;
+	    v[b].push_back(a);
+	}
+	for (int i = 1; i <= n; i++) {
+		memset(visited, 0, sizeof(visited));
+		dp[i] = dfs(i);
+		mx = max(dp[i], mx);
+	}
+	for (int i = 1; i <= n; i++) if (mx == dp[i]) cout << i << " ";
+	return 0;
 }
