@@ -1,43 +1,31 @@
 #include <iostream>
-#include <map>
-#include <string>
 
 using namespace std;
-
-int R, C;
-map<char, int> mp;
-string s;
+int R, C, ret;
 char arr[21][21];
-int visited[21][21];
-int max_val = 1;
-int di[] = {1, 0, -1, 0};
-int dj[] = {0, 1, 0, -1};
+const int di[] = { -1, 0, 1, 0};
+const int dj[] = {0, 1, 0, -1};
 
-void dfs(int a, int b, int cnt){
-	max_val = max(max_val, cnt);
-	for (int k = 0; k < 4; k++){
-		int ni = a + di[k];
-		int nj = b + dj[k];
+void go(int y, int x, int num, int cnt){
+	ret = max(ret, cnt);
+	for (int i = 0; i < 4; i++){
+		int ni = y + di[i];
+		int nj = x + dj[i];
 		if (ni < 0 || ni >= R || nj < 0 || nj >= C) continue;
-		if (visited[ni][nj] || mp[arr[ni][nj]]) continue;
-		visited[ni][nj] = 1;
-		mp[arr[ni][nj]] = 1;
-		dfs(ni, nj, cnt + 1);
-		mp[arr[ni][nj]] = 0;
-		visited[ni][nj] = 0;
+		int next = (1 << (int)(arr[ni][nj] - 'A'));
+		if ((num & next) == 0) go(ni, nj, num | next, cnt + 1);
 	}
+	return;
 }
 
 int main(){
 	cin >> R >> C;
-	fill(&visited[0][0], &visited[0][0] + 21 * 21, 0);
 	for (int i = 0; i < R; i++){
-		cin >> s;
-		for (int j = 0; j < C; j++) arr[i][j]= s[j];
+		for (int j = 0; j < C; j++){
+			cin >> arr[i][j];
+		}
 	}
-	mp[arr[0][0]] = 1;
-	visited[0][0] = 1;
-	dfs(0, 0, 1);
-
-	cout << max_val;
+	go(0, 0, 1 << (int)(arr[0][0] - 'A'), 1);
+	cout << ret;
+	return 0;
 }
