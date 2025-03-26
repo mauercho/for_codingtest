@@ -1,99 +1,92 @@
-class Node{
-    constructor(info, num, left = null, right = null){
-        this.info = info; // 노드 정보 (실제 x y 값)
-        this.num = num; // 인덱스 넣기
-        this.left = left; // 왼쪽 자식
-        this.right = right; // 오른쪽 자식
-    }
-    
-    hasLeft() {
-        return this.left !== null;
-    }
-    
-    hasRight() {
-        return this.right !== null;
-    }
+class Node {
+  constructor(info, idx, left = null, right = null) {
+    this.info = info;
+    this.idx = idx;
+    this.left = left;
+    this.right = right;
+  }
+
+  hasLeft() {
+    // null이면
+    return this.left !== null;
+  }
+
+  hasRight() {
+    return this.right !== null;
+  }
 }
 
-function makeBT(nodeinfo){
-    const arr = [...new Array(nodeinfo.length)].map((_, i) => i);
-    arr.sort((a, b) => {
-        const [ax, ay] = nodeinfo[a];
-        const [bx, by] = nodeinfo[b];
-        if (ay < by){
-            return 1;
-        } else if (ay === by){
-            if (ax < bx) {
-                return -1;
-            } else {
-                return 1;
-            }
+function makeBT(nodeinfo) {
+  // 여기서 BTree 만든다.
+
+  let array = [...new Array(nodeinfo.length)].map((_, i) => i);
+  array.sort((a, b) => {
+    const [ax, ay] = nodeinfo[a];
+    const [bx, by] = nodeinfo[b];
+
+    //y 는 내림 차순임.
+    if (ay < by) {
+      return 1;
+    } else if (ay === by) {
+      // x는 오름 차순
+      if (ax < bx) {
+        return -1;
+      } else {
+        return 1;
+      }
+    } else {
+      return -1;
+    }
+  });
+  let root = null;
+  for (const mem of array) {
+    if (!root) {
+      root = new Node(nodeinfo[mem], mem);
+    } else {
+      let parent = root;
+      const newNode = new Node(nodeinfo[mem], mem);
+      while (true) {
+        if (nodeinfo[mem][0] < parent.info[0]) {
+          if (parent.hasLeft()) {
+            parent = parent.left;
+            continue;
+          }
+          parent.left = newNode;
+          break;
         } else {
-            return -1;
+          if (parent.hasRight()) {
+            parent = parent.right;
+            continue;
+          }
+          parent.right = newNode;
+          break;
         }
-    })
-    let root = null;
-    for (const mem of arr){
-        if (!root){
-            root = new Node(nodeinfo[mem], mem);
-        } else {
-            let parent = root;
-            const newNode = new Node(nodeinfo[mem], mem);
-            while (true){
-                if (newNode.info[0] < parent.info[0]) {
-                    if (parent.hasLeft()){
-                        parent = parent.left;
-                        continue;
-                    }
-                    parent.left = newNode;
-                    break;
-                } else {
-                    if (parent.hasRight()){
-                        parent = parent.right;
-                        continue;
-                    } 
-                    parent.right = newNode;
-                    break;
-                }
-            }
-        }
+      }
     }
-    return root;
+  }
+  return root;
 }
 
-function preOrder(node, arr){
-    arr.push(node.num + 1);
-    if (node.hasLeft()){
-        preOrder(node.left, arr);
-    } 
-    if (node.hasRight()){
-        preOrder(node.right, arr);
-    }
-    
-    
-    return arr;
+function preOrder(root, answer) {
+  if (root === null) return;
+  answer[0].push(root.idx + 1);
+  preOrder(root.left, answer);
+  preOrder(root.right, answer);
 }
 
-function postOrder(node, arr){
-    if (node.hasLeft()){
-        postOrder(node.left, arr);
-    }
-    if (node.hasRight()){
-        postOrder(node.right, arr);
-    }
-    arr.push(node.num + 1);
-    
-    return arr;
+function postOrder(root, answer) {
+  if (root === null) return;
+  postOrder(root.left, answer);
+  postOrder(root.right, answer);
+  answer[1].push(root.idx + 1);
 }
 
 function solution(nodeinfo) {
-    var answer = [];
-    const root = makeBT(nodeinfo)
-    let tmp = [];
-    preOrder(root, tmp);
-    answer.push(tmp);
-    tmp = []
-    postOrder(root, tmp);
-    answer.push(tmp);
-    return answer;
+  //[[5,3],[11,5],[13,3],[3,5],[6,1],[1,3],[8,6],[7,2],[2,2]]
+  let answer = [[], []];
+
+  const root = makeBT(nodeinfo);
+  preOrder(root, answer);
+  postOrder(root, answer);
+  return answer;
 }
