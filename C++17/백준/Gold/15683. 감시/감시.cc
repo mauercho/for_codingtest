@@ -1,161 +1,81 @@
 #include <iostream>
+#include <algorithm>
 #include <vector>
 
 using namespace std;
 
-int n, m;
-int arr[10][10];
-vector<pair<int, int>> cctv;
-int min_sum = 1e9;
-
 int di[] = {1, 0, -1, 0};
 int dj[] = {0, 1, 0, -1};
+int _min = 1e9;
+int n, m;
+int arr[10][10];
+int cnt;
+vector<vector<vector<int>>> directions = {
+	{},
+	{{0}, {1}, {2}, {3}}, // 1 번
+	{{0, 2}, {1, 3}}, // 2 번
+	{{0, 1}, {1, 2}, {2, 3}, {3, 0}}, // 3 번
+	{{0, 1, 2}, {1, 2, 3}, {2, 3, 0}, {3, 0, 1}}, // 4 번
+	{{0, 1, 2, 3}}, // 5 번
+};
+vector<pair<int, int>> cctv;
 
-vector<pair<int, int>> extend_cctv(int here, int direction){
-	int i = cctv[here].first;
-	int j = cctv[here].second;
-	vector<pair<int, int>> temp;
-	if (arr[i][j] == 1){
-		int ni = i + di[direction];
-		int nj = j + dj[direction];
+vector<pair<int, int>> extend_cctv(vector<int>& set, int i, int j){
+	vector<pair<int, int>> v;
+
+	for (auto &mem: set){
+		int ni = i + di[mem];
+		int nj = j + dj[mem];
 		while (0 <= ni && ni < n && 0 <= nj && nj < m && arr[ni][nj] != 6){
-			if (arr[ni][nj] == 0) {
+			if (arr[ni][nj] == 0){
 				arr[ni][nj] = 8;
-				temp.push_back({ni, nj});
+				v.push_back({ni, nj});
 			}
-			ni = ni + di[direction];
-			nj = nj + dj[direction];
+			ni += di[mem];
+			nj += dj[mem];
 		}
 	}
-	else if (arr[i][j] == 2){
-		int ni = i + di[direction];
-		int nj = j + dj[direction];
-		while (0 <= ni && ni < n && 0 <= nj && nj < m && arr[ni][nj] != 6){
-			if (arr[ni][nj] == 0) {
-				arr[ni][nj] = 8;
-				temp.push_back({ni, nj});
-			}
-			ni = ni + di[direction];
-			nj = nj + dj[direction];
-		}
-		ni = i + di[(direction + 2) % 4];
-		nj = j + dj[(direction + 2) % 4];
-		while (0 <= ni && ni < n && 0 <= nj && nj < m && arr[ni][nj] != 6){
-			if (arr[ni][nj] == 0) {
-				arr[ni][nj] = 8;
-				temp.push_back({ni, nj});
-			}
-			ni = ni + di[(direction + 2) % 4];
-			nj = nj + dj[(direction + 2) % 4];
-		}
-	}
-	else if (arr[i][j] == 3){
-		int ni = i + di[direction];
-		int nj = j + dj[direction];
-		while (0 <= ni && ni < n && 0 <= nj && nj < m && arr[ni][nj] != 6){
-			if (arr[ni][nj] == 0) {
-				arr[ni][nj] = 8;
-				temp.push_back({ni, nj});
-			}
-			ni = ni + di[direction];
-			nj = nj + dj[direction];
-		}
-		ni = i + di[(direction + 1) % 4];
-		nj = j + dj[(direction + 1) % 4];
-		while (0 <= ni && ni < n && 0 <= nj && nj < m && arr[ni][nj] != 6){
-			if (arr[ni][nj] == 0) {
-				arr[ni][nj] = 8;
-				temp.push_back({ni, nj});
-			}
-			ni = ni + di[(direction + 1) % 4];
-			nj = nj + dj[(direction + 1) % 4];
-		}
-	}
-	else if (arr[i][j] == 4){
-		int ni = i + di[direction];
-		int nj = j + dj[direction];
-		while (0 <= ni && ni < n && 0 <= nj && nj < m && arr[ni][nj] != 6){
-			if (arr[ni][nj] == 0) {
-				arr[ni][nj] = 8;
-				temp.push_back({ni, nj});
-			}
-			ni = ni + di[direction];
-			nj = nj + dj[direction];
-		}
-		ni = i + di[(direction + 1) % 4];
-		nj = j + dj[(direction + 1) % 4];
-		while (0 <= ni && ni < n && 0 <= nj && nj < m && arr[ni][nj] != 6){
-			if (arr[ni][nj] == 0) {
-				arr[ni][nj] = 8;
-				temp.push_back({ni, nj});
-			}
-			ni = ni + di[(direction + 1) % 4];
-			nj = nj + dj[(direction + 1) % 4];
-		}
-		ni = i + di[(direction + 2) % 4];
-		nj = j + dj[(direction + 2) % 4];
-		while (0 <= ni && ni < n && 0 <= nj && nj < m && arr[ni][nj] != 6){
-			if (arr[ni][nj] == 0) {
-				arr[ni][nj] = 8;
-				temp.push_back({ni, nj});
-			}
-			ni = ni + di[(direction + 2) % 4];
-			nj = nj + dj[(direction + 2) % 4];
-		}
-	}
-	else {
-		for (int c = 0; c < 4; c++){
-			int ni = i + di[c];
-			int nj = j + dj[c];
-			while (0 <= ni && ni < n && 0 <= nj && nj < m && arr[ni][nj] != 6){
-				if (arr[ni][nj] == 0) {
-                    arr[ni][nj] = 8;
-                    temp.push_back({ni, nj});
-                }
-				ni = ni + di[c];
-				nj = nj + dj[c];
-			}
-		}
-	}
-	return temp;
+	return v;
 }
 
-void dfs(int cnt){
-	if (cnt == cctv.size()){
+void dfs(int here){
+	if (here == cnt){
 		int sum = 0;
 		for (int i = 0; i < n; i++){
 			for (int j = 0; j < m; j++){
-				if (arr[i][j] == 0) sum += 1;
+				if (arr[i][j] == 0){
+					sum += 1;
+				}
 			}
 		}
-		min_sum = min(min_sum, sum);
-		return;
+		_min = min(_min, sum);
+		return ;
 	}
-	for (int i = 0; i < 4; i++){ // 4방향으로 돌림.
-		vector<pair<int, int>> change = extend_cctv(cnt, i);
-		dfs(cnt + 1);
-		for (auto mem: change){
+	int i = cctv[here].first;
+	int j = cctv[here].second;
+	int type = arr[i][j];
+	for (auto &mem: directions[type]){
+		vector<pair<int, int>> _change = extend_cctv(mem, i, j);
+		dfs(here + 1);
+		for (auto &mem : _change){
 			arr[mem.first][mem.second] = 0;
 		}
 	}
 
 }
 
-int main(){
+int main() {
 	cin >> n >> m;
-	// int ans = n * m;
 	for (int i = 0; i < n; i++){
 		for (int j = 0; j < m; j++){
 			cin >> arr[i][j];
-			if (arr[i][j] != 0){
-				if (arr[i][j] != 6){
-					cctv.push_back({i, j});
-				}
-				// ans -= 1;
+			if (arr[i][j] != 0 && arr[i][j] != 6){
+				cnt += 1; // cctv 개수
+				cctv.push_back({i, j});
 			}
 		}
-	} // 0의 갯수를 세줌.
+	}
 	dfs(0);
-	cout << min_sum;
+	cout << _min;
 	return 0;
 }
