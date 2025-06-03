@@ -1,43 +1,45 @@
 #include <iostream>
 #include <vector>
+
 using namespace std;
+int n, m;
+int l = 1, r;
+int answer;
+vector<int> v;
+// 크면 성공 가능성 업 작으면 작아짐.
 
-
-typedef long long ll;
-ll M, N;
-vector<ll> v;
-ll ans = 1e18;
-ll temp;
-ll s = 1;
-ll e = 0;
-ll mid;
-
-bool check(ll num){
-	ll cnt = 0;
-	for (int i = 0; i < v.size(); i++){
-		cnt += v[i] / num;
-		if (v[i] % num){
-			cnt += 1;
+bool check(int num){
+	int ret = 0;
+	for (auto mem: v){
+		ret += (mem / num);
+		if (mem % num != 0){
+			ret += 1;
 		}
 	}
-	return N >= cnt;
+	return ret <= n;
 }
 
 int main(){
-	cin >> N >> M;
-	for (int k = 0; k < M; k++){
+	cin >> n >> m;
+	int temp;
+	for (int i = 0; i < m; i++){
 		cin >> temp;
-		e = max(temp, e);
+		if (temp > r){
+			r = temp;
+		}
 		v.push_back(temp);
 	}
-	while (s <= e){
-		mid = (s + e) / 2;
-		if (check(mid)){
-			ans = mid;
-			e = mid - 1;
+	answer = r;
+	while (l <= r){
+		int middle = (l + r) / 2;
+		if (check(middle)) {
+			r = middle - 1;
+			answer = middle;
 		}
-		else
-			s = mid + 1;
+		else {
+			l = middle + 1;
+		}
 	}
-	cout << ans;
+	cout << answer;
+	return 0;
 }
