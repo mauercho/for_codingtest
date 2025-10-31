@@ -1,0 +1,21 @@
+-- 코드를 작성해주세요
+WITH RECURSIVE tmp AS (
+    SELECT id, parent_id, 1 as GENERATION
+    FROM ECOLI_DATA
+    WHERE PARENT_ID IS NULL
+    UNION ALL
+    SELECT s.id, s.parent_id, tmp.GENERATION + 1
+    FROM tmp 
+    join ECOLI_DATA s
+    ON tmp.id = s.parent_id
+)
+
+SELECT COUNT(*) AS COUNT, GENERATION
+FROM tmp
+WHERE ID NOT IN (
+    SELECT DISTINCT PARENT_ID 
+    FROM tmp
+    WHERE PARENT_ID IS NOT NULL
+)
+GROUP BY GENERATION
+ORDER BY GENERATION
