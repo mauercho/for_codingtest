@@ -5,15 +5,17 @@ using namespace std;
 
 vector<vector<int>> solution(vector<vector<int>> arr1, vector<vector<int>> arr2) {
     vector<vector<int>> answer;
-    int n = arr1.size();
-    int a = arr1[0].size();
-    int m = arr2[0].size();
-    answer.assign(n, vector<int>(m, 0));
-    for (int i = 0; i < n; i++){
-        for (int j = 0; j < m; j++){
+    int arr1_row = arr1.size();
+    int arr1_col = arr1[0].size();
+    int arr2_row = arr2.size();
+    int arr2_col = arr2[0].size();
+    // answer = vector<vector<int>>(arr1_row, vector<int>(arr2_col, 0));
+    answer.resize(arr1_row, vector<int>(arr2_col, 0));
+    for (int i = 0; i < arr1_row; i++){
+        for (int j = 0; j < arr2_col; j++){
             int sum_val = 0;
-            for (int z = 0; z < a; z++){
-                sum_val += arr1[i][z] * arr2[z][j];
+            for (int k = 0; k < arr1_col; k++){
+                sum_val += arr1[i][k] * arr2[k][j];
             }
             answer[i][j] = sum_val;
         }
