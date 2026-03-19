@@ -1,10 +1,11 @@
 #include <string>
 #include <vector>
+#include <utility>
 #include <algorithm>
 
 using namespace std;
 
-bool compare(pair<double, int> a, pair<double, int> b){
+bool compare(const pair<double, int>& a, const pair<double, int>& b){
     if (a.first == b.first){
         return a.second < b.second;
     }
@@ -13,21 +14,32 @@ bool compare(pair<double, int> a, pair<double, int> b){
 
 vector<int> solution(int N, vector<int> stages) {
     vector<int> answer;
-    vector<pair<double, int>> tmp; 
     sort(stages.begin(), stages.end());
-    int cnt = stages.size();
-    for (int i = 1; i <= N; i++){
-        int nu = count(stages.begin(), stages.end(), i);
-        if (cnt != 0){
-            tmp.push_back({(double)nu / cnt, i});
-        }
-        else tmp.push_back({0, i});
-        cnt -= nu;
-    }
-    sort(tmp.begin(), tmp.end(), compare);
+    int sz = stages.size();
+    vector<pair<double, int>> v;
+    int prev = stages[0];
+    int cnt = 0;
     
-    for (auto ddd: tmp){
-        answer.push_back(ddd.second);
+    for (int i = 0; i < N; i++){
+        v.push_back({0, i + 1});
+    }
+    for (int i = 0; i < stages.size(); i++){
+        if (prev != stages[i]) {
+            v[prev - 1] = {(double)cnt / sz, prev};
+            sz -= cnt;
+            cnt = 1;
+            prev = stages[i];
+            continue ;
+        } 
+        cnt++;
+    }
+    if (prev != N + 1){
+        v[prev - 1] = {cnt / sz, prev};
+    }
+    
+    sort(v.begin(),v.end(),compare);
+    for (int i = 0; i < N; i++){
+        answer.push_back(v[i].second);
     }
     return answer;
 }
